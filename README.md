@@ -9,4 +9,4 @@
 ## Overview
 
 LinkedIn’s job search filters are often too restrictive.  
-These scripts uses the **TheirStack API** to fetch and filter jobs for me.
+These scripts use the **TheirStack API** to fetch and filter jobs for me.
