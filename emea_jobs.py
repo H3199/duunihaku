@@ -4,6 +4,8 @@ import json
 import os
 from dotenv import load_dotenv
 from langdetect import detect, DetectorFactory
+from datetime import datetime
+
 
 dealbreakers = [
     "must be uk based",
@@ -134,7 +136,11 @@ if __name__ == "__main__":
         jobs_list = jobs_emea["data"]
     else:
         jobs_list = jobs_emea
-#    print(json.dumps(jobs_list))
     en_jobs = filter_english_jobs(jobs_list)
-    print(json.dumps(en_jobs))
 
+# Wrap with a timestamp.
+    output = {
+    "fetched_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+    "data": en_jobs
+    }
+    print(json.dumps(output))

@@ -4,6 +4,7 @@ import json
 import os
 from dotenv import load_dotenv
 from math import radians, sin, cos, sqrt, atan2
+from datetime import datetime
 
 load_dotenv()
 
@@ -104,4 +105,10 @@ if __name__ == "__main__":
 
     filtered_jobs = filter_jobs(jobs_list)
 
-    print(json.dumps(filtered_jobs, indent=2))
+    # Wrap the results with a timestamp
+    output = {
+        "fetched_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "data": filtered_jobs
+    }
+
+    print(json.dumps(output, indent=2))
