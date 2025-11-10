@@ -9,6 +9,7 @@ from datetime import datetime
 
 dealbreakers = [
     "must be uk based",
+    "uk-based"
     "must be in the uk",
     "uk only",
     "must live in the uk",
@@ -52,7 +53,16 @@ dealbreakers = [
     "eligible to work in france only",
     "eligible to work in spain only",
     "eligible to work in italy only",
-    "hybrid working"
+    "hybrid working",
+    "fluent in german",
+    "native german speaker",
+    "german language required",
+    "must speak german",
+    "excellent german skills",
+    "proficient in german",
+    "german speaking",
+    "bilingual in german",
+    "german native"
     ]
 
 emea = [
