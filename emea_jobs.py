@@ -14,6 +14,7 @@ dealbreakers = [
     "uk only",
     "must live in the uk",
     "candidates must be in the uk",
+    "work in the UK",
     "based in london",
     "must be located in london",
     "must be located in germany",
