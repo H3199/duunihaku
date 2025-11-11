@@ -2,7 +2,7 @@
 
 > A small Python tool that filters job listings from [TheirStack](https://theirstack.com) to make up for LinkedIn’s limited search capabilities.
 
-![Sucks](./sucks.gif)
+![Sucks](./assets/sucks.gif)
 
 > Perhaps a kanban integration in the future, since I'm currently tracking my job applications manually.
 
@@ -10,7 +10,7 @@
 
 ## Overview
 
-LinkedIn’s job search filters are often too restrictive.  
+LinkedIn’s job search filters are often too restrictive.
 These scripts use the **TheirStack API** to fetch and filter jobs for me.
 
 ---
@@ -48,4 +48,3 @@ These scripts use the **TheirStack API** to fetch and filter jobs for me.
 
 1. docker build -t duunihaku .
 2. docker run -p 8501:8501 -v $(pwd)/jaysons:/app/jaysons duunihaku:latest &
-

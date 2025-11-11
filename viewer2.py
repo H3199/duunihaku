@@ -5,7 +5,7 @@ import streamlit as st
 from datetime import datetime
 
 # Config
-st.set_page_config(page_title="Job Listings Viewer", layout="wide")
+st.set_page_config(page_title="Job Listings Viewer", page_icon="assets/Tonninseteli.png" , layout="wide")
 st.title("Daily Job Listings Dashboard")
 
 DATA_DIR = "jaysons"
