@@ -4,6 +4,8 @@ import os
 from dotenv import load_dotenv
 from fi_jobs import filter_jobs
 
+# TODO: add test for dumping json.
+
 load_dotenv()
 
 home_lat = float(os.getenv("HOME_LAT"))
