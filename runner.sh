@@ -25,11 +25,11 @@ if [ "$MOCK" = "1" ]; then
 
 else
     echo "Fetching Finnish jobs..."
-    ./fi_jobs.py > "$FI_FILE"
+    python3 ./fi_jobs.py > "$FI_FILE"
     echo "Saved: $FI_FILE"
 
     echo "Fetching EMEA jobs..."
-    ./emea_jobs.py > "$EMEA_FILE"
+    python3 ./emea_jobs.py > "$EMEA_FILE"
     echo "Saved: $EMEA_FILE"
 
     # Copy to latest
