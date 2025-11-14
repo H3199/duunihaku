@@ -165,7 +165,7 @@ if __name__ == "__main__":
     jobs_list = fetch_jobs_emea()
     logging.info(f"Fetched {len(jobs_list)} jobs before filtering.")
     en_jobs = filter_english_jobs(jobs_list)
-    logging.info(f"{len(filtered_english_jobs)} jobs remained after filtering.")
+    logging.info(f"{len(en_jobs)} jobs remained after filtering.")
 
     # Dump unfiltered jobs in debug mode
     if logging.getLogger().level == logging.DEBUG:
