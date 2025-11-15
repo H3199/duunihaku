@@ -18,9 +18,9 @@ pipeline {
             steps {
                 script {
                     sh """
-                        echo "--- Running tests ---"
-                        pip3 install -r requirements.txt >/dev/null 2>&1 || true
-                        pytest -v ${PYTEST_PATH}
+                        echo "Running tests inside Docker image"
+                        docker build -t duunihaku-test .
+                        docker run --rm duunihaku-test pytest -v tests
                     """
                 }
             }
