@@ -44,7 +44,6 @@ These scripts use the **TheirStack API** to fetch and filter jobs for me.
 
 ---
 
-## Docker usage (still janky)
+## Docker usage
 
-1. docker build -t duunihaku .
-2. docker run -p 8501:8501 -v $(pwd)/jaysons:/app/jaysons duunihaku:latest &
+1. Check out the docker-compose.yml for .env file etc.
