@@ -71,14 +71,6 @@ class Location(TypedDict, total=False):
     display_name: str
     country_name: str
 
-class JobState(str, Enum):
-    NEW = "new"
-    SAVED = "saved"
-    APPLIED = "applied"
-    INTERVIEW = "interview"
-    REJECTED = "rejected"
-    OFFER = "offer"
-
 class JobRecord(TypedDict, total=False):
     id: int
     job_title: str

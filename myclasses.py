@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from typing import Optional
 import json
 import os
-from job_state import JobState
 from mytypes import JobRecord
+from enum import Enum
+
+
+class JobState(str, Enum):
+    NEW = "new"
+    SAVED = "saved"
+    APPLIED = "applied"
+    INTERVIEW = "interview"
+    REJECTED = "rejected"
+    OFFER = "offer"
 
 
 def get_state_file() -> str:
@@ -15,14 +24,16 @@ def get_state_file() -> str:
 @dataclass
 class Job:
     id: int
-    job_title: str
+    title: str
     company: str
     url: str
     description: str
+    country: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     remote: Optional[bool] = False
     hybrid: Optional[bool] = False
+    distance_from_home_km: Optional[float] = None
 
     # local/persistence fields:
     state: JobState = JobState.NEW
@@ -34,8 +45,8 @@ class Job:
     @classmethod
     def from_raw(cls, data: JobRecord) -> "Job":
         return cls(
-            id=data["id"],
-            job_title=data.get("job_title", ""),
+            id=data.get("id"),
+            title=data.get("job_title", ""),
             company=data.get("company", ""),
             url=data.get("url", ""),
             description=data.get("description", ""),
@@ -43,7 +54,23 @@ class Job:
             longitude=data.get("longitude"),
             remote=data.get("remote"),
             hybrid=data.get("hybrid"),
+            country=data.get("country", ""),
+            distance_from_home_km=data.get("distance_from_home_km"),
         )
+
+
+    def to_dict(self) -> dict:
+        d = asdict(self)
+        d["state"] = self.state.value  # convert enum to string
+        return d
+
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "Job":
+        job = cls(**{k: v for k, v in d.items() if k != "state"})
+        if "state" in d:
+            job.state = JobState(d["state"])
+        return job
 
 
     def update_state(self, new_state: JobState, notes: Optional[str] = None):
@@ -55,7 +82,8 @@ class Job:
 
 
     def save(self):
-        state_file = get_state_file()
+        # TODO: hardcoded path
+        state_file = os.getenv("STATE_FILE", "jaysons/job_state.json")
 
         if os.path.exists(state_file):
             with open(state_file) as f:
