@@ -15,6 +15,7 @@ class JobState(str, Enum):
     INTERVIEW = "interview"
     REJECTED = "rejected"
     OFFER = "offer"
+    TRASH = "trash"
 
 
 def get_state_file() -> str:

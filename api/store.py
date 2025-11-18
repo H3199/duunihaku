@@ -37,9 +37,8 @@ def persist_job(job_id: int, state: str | JobState, notes: str | None = None):
     save_state(data)
     return data[str(job_id)]
 
-
+# Load all jobs from fi_latest.json and emea_latest.json.
 def load_raw_jobs():
-    """Load all jobs from fi_latest.json and emea_latest.json."""
     jobs = []
 
     for fname in ["fi_latest.json", "emea_latest.json"]:
