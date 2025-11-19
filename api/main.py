@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Body
 from .services import update_job_state, apply_state_to_jobs, persist_job, update_notes
-from .store import load_state
+from .store import load_state, load_raw_jobs
 from myclasses import JobState, Job
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,20 +37,26 @@ def set_job_state(job_id: int, update: JobUpdate):
     return {"id": job_id, **updated}
 
 
-# Return all jobs currently tracked in job_state.json.
 @app.get("/jobs")
 def list_jobs():
+    # 1) Load job feed (scraped or cached job list)
+    jobs = load_raw_jobs()
 
-    data = load_state()
+    # 2) Load job state persistence
+    saved_state = load_state()
 
-    # Convert stored state objects into response format
     response = []
-    for job_id, record in data.items():
-        response.append({
-            "id": int(job_id),
-            "state": record["state"],
-            "notes": record.get("notes", "")
-        })
+
+    for job in jobs:
+        job_id_str = str(job.id)
+
+        # If we have saved state, override fields
+        if job_id_str in saved_state:
+            job.state = saved_state[job_id_str].get("state", job.state)
+            job.notes = saved_state[job_id_str].get("notes", job.notes)
+            job.updated_at = saved_state[job_id_str].get("updated_at", job.updated_at)
+
+        response.append(job.to_dict())
 
     return response
 

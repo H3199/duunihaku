@@ -25,10 +25,25 @@ export default function HomePage() {
               borderRadius: "6px",
             }}
           >
-            <strong>{job.title}</strong>{" "}
+            <strong>
+              <a href={job.url} target="_blank" rel="noopener noreferrer">
+                {job.title}
+              </a>
+            </strong>{" "}
             <span style={{ color: "#666" }}>({job.company})</span>
             <br />
-            <small style={{ color: "orange" }}>Status: {job.state}</small>
+            <small
+              style={{ color: job.state === "applied" ? "green" : "#999" }}
+            >
+              Status: {job.state || "new"}
+            </small>
+            {job.notes && (
+              <p
+                style={{ marginTop: "4px", fontSize: "0.85rem", color: "#444" }}
+              >
+                📝 {job.notes}
+              </p>
+            )}
           </li>
         ))}
       </ul>
