@@ -1,46 +1,67 @@
-export default function KanbanColumn({ title, jobs, onMove, allowedStates }) {
+import { Paper, Title, Stack, Select, Text, Box, Badge } from "@mantine/core";
+import type { Job } from "../api/jobs";
+
+type Props = {
+  title: string;
+  jobs: Job[];
+  onMove: (job: Job, newState: string) => void;
+  allowedStates: string[];
+};
+
+export default function KanbanColumn({
+  title,
+  jobs,
+  onMove,
+  allowedStates,
+}: Props) {
   return (
-    <div
-      style={{
-        width: "260px",
-        background: "#f7f7f7",
-        padding: "10px",
-        borderRadius: "8px",
+    <Box
+      p="md"
+      sx={{
+        width: 300,
+        background: "#f8f9fa",
+        borderRadius: 8,
+        border: "1px solid #ddd",
+        height: "100%",
       }}
     >
-      <h3>
-        {title} ({jobs.length})
-      </h3>
+      <Title order={4} mb="md">
+        {title} <Badge size="sm">{jobs.length}</Badge>
+      </Title>
 
-      {jobs.map((job) => (
-        <div
-          key={job.id}
-          style={{
-            background: "white",
-            padding: "10px",
-            border: "1px solid #ddd",
-            borderRadius: "6px",
-            marginBottom: "10px",
-          }}
-        >
-          <strong>{job.title}</strong>
-          <br />
-          <span style={{ color: "#555" }}>{job.company}</span>
+      <Stack spacing="md">
+        {jobs.map((job) => (
+          <Paper
+            key={job.id}
+            withBorder
+            p="sm"
+            radius="md"
+            shadow="xs"
+            sx={{ background: "white" }}
+          >
+            <Text fw={600} size="sm">
+              {job.title}
+            </Text>
+            <Text size="xs" c="dimmed">
+              {job.company}
+            </Text>
 
-          <div style={{ marginTop: "8px" }}>
-            <select
+            {job.notes && (
+              <Text size="xs" mt={4} c="gray">
+                📝 {job.notes}
+              </Text>
+            )}
+
+            <Select
+              mt="sm"
+              size="xs"
               value={job.state || "new"}
-              onChange={(e) => onMove(job, e.target.value)}
-            >
-              {allowedStates.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      ))}
-    </div>
+              data={allowedStates.map((s) => ({ value: s, label: s }))}
+              onChange={(value) => value && onMove(job, value)}
+            />
+          </Paper>
+        ))}
+      </Stack>
+    </Box>
   );
 }
