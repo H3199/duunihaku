@@ -10,6 +10,8 @@ app = FastAPI(title="Duunihaku API")
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
 
 app.add_middleware(
@@ -56,7 +58,7 @@ def list_jobs():
             job.notes = saved_state[job_id_str].get("notes", job.notes)
             job.updated_at = saved_state[job_id_str].get("updated_at", job.updated_at)
 
-        response.append(job.to_dict())
+        response.append(job.as_dict())
 
     return response
 
