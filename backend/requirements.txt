@@ -1,0 +1,10 @@
+requests
+python-dotenv
+langdetect
+streamlit
+pytest
+playwright
+pytest-playwright
+fastapi
+uvicorn
+pydantic

@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-WORKDIR /app
+WORKDIR /app/backend
 
 RUN apt-get update && apt-get install -y cron tini && rm -rf /var/lib/apt/lists/*
 
@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN chmod +x /app/runner.sh /app/entrypoint.sh
+RUN chmod +x /app/backend/runner.sh /app/backend/entrypoint.sh
 
 # Set cron job
 RUN echo "SHELL=/bin/bash" > /etc/cron.d/jobfetcher \
@@ -26,4 +26,4 @@ RUN ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 EXPOSE 8501
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["/app/entrypoint.sh"]
+CMD ["/app/backend/entrypoint.sh"]
