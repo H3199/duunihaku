@@ -8,6 +8,7 @@ from langdetect import detect, DetectorFactory
 from datetime import datetime
 from mytypes import JobRecord
 from typing import List
+from api.status import get_credits
 
 
 dealbreakers = [
@@ -76,7 +77,11 @@ dealbreakers = [
     "italian level",
     "russian",
     "on-site",
-    "must already be domiciled"
+    "must already be domiciled",
+    "hybrid role",
+    "hybrid work",
+    "UK Resident",
+    "Location: Hybrid"
     ]
 
 emea = [
@@ -117,7 +122,6 @@ logging.basicConfig(
 )
 
 THEIRSTACK_KEY = os.getenv("THEIRSTACK_API_KEY")
-#openai_key = os.getenv("OPENAI_API_KEY")
 
 # Fetch EMEA remote jobs from TheirStack API and return as a list of JobRecord objects.
 def fetch_jobs_emea() -> List[JobRecord]:
@@ -176,7 +180,7 @@ if __name__ == "__main__":
             json.dump(jobs_list, f, indent=2)
         logging.debug(f"Dumped unfiltered job data to {debug_file}")
 
-    # Wrap results with timestamp
+    # Wrap results with timestamp and credits remaining
     output = {
         "fetched_at": datetime.now().astimezone().isoformat(timespec="seconds"),
         "data": [job.__dict__ if hasattr(job, "__dict__") else job for job in en_jobs],

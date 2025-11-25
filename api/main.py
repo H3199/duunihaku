@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException, Body
+from fastapi.openapi.models import APIKey
+from fastapi.routing import APIRoute
 from .services import update_job_state, apply_state_to_jobs, persist_job, update_notes
 from .store import load_state, load_raw_jobs, load_all_jobs
 from myclasses import JobState, Job
