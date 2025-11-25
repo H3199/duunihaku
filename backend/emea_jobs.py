@@ -6,8 +6,11 @@ import os
 from dotenv import load_dotenv
 from langdetect import detect, DetectorFactory
 from datetime import datetime
-from mytypes import JobRecord
+from mytypes import JobRecord # Basically ORMish stuff, some technical debt here, because I never planned this project to grow this complex.
+from backend.core.database import engine # DB stuff, obviously.
+from backend.models.schema import Job
 from typing import List
+from sqlmodel import Session, select
 from api.status import get_credits
 
 
@@ -166,23 +169,61 @@ def filter_english_jobs(jobs: List[JobRecord]) -> List[JobRecord]:
     return english_jobs
 
 
+def save_jobs_to_db(jobs: List[JobRecord]):
+    inserted = 0
+    updated = 0
+
+    with Session(engine) as session:
+        for raw in jobs:
+
+            existing = session.exec(
+                select(Job).where(Job.external_id == str(raw["id"]))
+            ).first()
+
+            if existing:
+                # Update relevant fields if changed
+                changed = False
+
+                if existing.title != raw["job_title"]:
+                    existing.title = raw["job_title"]; changed = True
+
+                if existing.company != raw["company"]:
+                    existing.company = raw["company"]; changed = True
+
+                if existing.url != raw["url"]:
+                    existing.url = raw["url"]; changed = True
+
+                if existing.description != raw.get("description", ""):
+                    existing.description = raw.get("description", ""); changed = True
+
+                if changed:
+                    session.add(existing)
+                    updated += 1
+
+            else:
+                job = Job(
+                    external_id=str(raw["id"]),
+                    title=raw["job_title"],
+                    company=raw["company"],
+                    url=raw["url"],
+                    description=raw.get("description", ""),
+                    country=raw.get("country", None)
+                )
+                session.add(job)
+                inserted += 1
+
+        session.commit()
+
+    logging.info(f"DB write complete — inserted: {inserted}, updated: {updated}")
+
+
 if __name__ == "__main__":
-    # Fetch and filter jobs
     jobs_list = fetch_jobs_emea()
     logging.info(f"Fetched {len(jobs_list)} jobs before filtering.")
-    en_jobs = filter_english_jobs(jobs_list)
-    logging.info(f"{len(en_jobs)} jobs remained after filtering.")
 
-    # Dump unfiltered jobs in debug mode
-    if logging.getLogger().level == logging.DEBUG:
-        debug_file = "debug_en_jobs.json"
-        with open(debug_file, "w") as f:
-            json.dump(jobs_list, f, indent=2)
-        logging.debug(f"Dumped unfiltered job data to {debug_file}")
+    english = filter_english_jobs(jobs_list)
+    logging.info(f"{len(english)} detected English.")
 
-    # Wrap results with timestamp and credits remaining
-    output = {
-        "fetched_at": datetime.now().astimezone().isoformat(timespec="seconds"),
-        "data": [job.__dict__ if hasattr(job, "__dict__") else job for job in en_jobs],
-    }
-    print(json.dumps(output, indent=2))
+    save_jobs_to_db(english)
+
+    logging.info("Job sync completed.")

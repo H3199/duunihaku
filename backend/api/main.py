@@ -6,8 +6,16 @@ from .store import load_state, load_raw_jobs, load_all_jobs
 from myclasses import JobState, Job
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from backend.core.database import init_db
+
 
 app = FastAPI(title="Duunihaku API")
+
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
 
 origins = [
     "http://localhost:3000",
@@ -16,6 +24,7 @@ origins = [
     "http://127.0.0.1:8000",
 ]
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -23,6 +32,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 class JobUpdate(BaseModel):
     state: JobState | None = None

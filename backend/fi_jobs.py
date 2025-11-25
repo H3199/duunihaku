@@ -22,7 +22,6 @@ logging.basicConfig(
 
 
 def fetch_jobs_fi() -> List[JobRecord]:
-    """Fetch Finnish jobs from TheirStack API."""
     url = "https://api.theirstack.com/v1/jobs/search"
     headers = {
         "Content-Type": "application/json",
@@ -76,6 +75,7 @@ def filter_jobs(jobs: List[JobRecord], radius_km: float = 50) -> List[JobRecord]
                 job["filter_reason"] = f"onsite_within_{radius_km}km"
                 filtered.append(job)
     return filtered
+
 
 #  This function calculates the distance between two coordinate points
 def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
