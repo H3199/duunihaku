@@ -1,5 +1,7 @@
 FROM python:3.12-slim
 
+RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
+RUN apt-get install -y nano # we're gonna have to edit the cronjob or something
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y cron tini && rm -rf /var/lib/apt/lists/*
