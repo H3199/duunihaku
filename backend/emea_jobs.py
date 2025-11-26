@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from langdetect import detect, DetectorFactory
 from datetime import datetime
 from mytypes import JobRecord # Basically ORMish stuff, some technical debt here, because I never planned this project to grow this complex.
-from backend.core.database import engine # DB stuff, obviously.
-from backend.models.schema import Job
+from core.database import engine # DB stuff, obviously.
+from models.schema import Job
 from typing import List
 from sqlmodel import Session, select
 from api.status import get_credits
@@ -144,6 +144,9 @@ def fetch_jobs_emea() -> List[JobRecord]:
         "job_title_or": ["devops", "site reliability", "infrastructure", "platform", "system", "administrator", "dba"],
         "job_title_not": ["architect"] # not yet...
     }
+
+    response = requests.post(url, headers=headers, json=data)
+
     if not response.ok:
         raise RuntimeError(
             f"EMEA fetch failed: {response.status_code} {response.text}"

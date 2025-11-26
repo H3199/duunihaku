@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
 from datetime import datetime
 
+
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     email: str
@@ -36,15 +37,20 @@ class Job(SQLModel, table=True):
     history: List["JobStateHistory"] = Relationship(back_populates="job")
 
 
-class CVVer(SQLModel, table=True):
+class CVVersion(SQLModel, table=True):
+    __tablename__ = "cvversion"
+
     id: Optional[int] = Field(default=None, primary_key=True)
     version_label: str
     file_path: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+    history: List["JobStateHistory"] = Relationship(back_populates="cv_version")
+
 
 class JobStateHistory(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+
     job_id: int = Field(foreign_key="job.id")
     user_id: int = Field(foreign_key="user.id")
     cv_version_id: Optional[int] = Field(default=None, foreign_key="cvversion.id")
@@ -55,4 +61,4 @@ class JobStateHistory(SQLModel, table=True):
 
     job: Job = Relationship(back_populates="history")
     user: User = Relationship(back_populates="job_states")
-    cv_version: Optional[CVVersion] = Relationship()
+    cv_version: Optional[CVVersion] = Relationship(back_populates="history")
