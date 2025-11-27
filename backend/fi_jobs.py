@@ -8,6 +8,9 @@ from typing import List, Optional
 import requests
 from dotenv import load_dotenv
 from mytypes import JobRecord
+from sqlmodel import Session, select
+from models.schema import Job, JobRegion, JobSource
+from typing import List
 
 load_dotenv()
 
@@ -87,22 +90,74 @@ def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return R * c
 
 
+def save_jobs_to_db_fi(jobs: List[dict]):
+    inserted = 0
+    updated = 0
+
+    with Session(engine) as session:
+        for raw in jobs:
+
+            external_id = str(raw["id"])
+
+            existing = session.exec(
+                select(Job).where(Job.external_id == external_id)
+            ).first()
+
+            if existing:
+                changed = False
+
+                updates = {
+                    "title": raw["job_title"],
+                    "company": raw["company"],
+                    "url": raw["url"],
+                    "description": raw.get("description", ""),
+                    "country": raw.get("country", None),
+                }
+
+                for field, value in updates.items():
+                    if getattr(existing, field) != value:
+                        setattr(existing, field, value)
+                        changed = True
+
+                if existing.region is None:
+                    existing.region = JobRegion.FI
+                    changed = True
+
+                if changed:
+                    session.add(existing)
+                    updated += 1
+
+            else:
+                job = Job(
+                    external_id=external_id,
+                    title=raw["job_title"],
+                    company=raw["company"],
+                    url=raw["url"],
+                    description=raw.get("description", ""),
+                    country=raw.get("country", None),
+                    region=JobRegion.FI,
+                )
+                session.add(job)
+                inserted += 1
+
+        session.commit()
+
+    logging.info(f"[FI] DB sync complete — inserted: {inserted}, updated: {updated}")
+
+
 if __name__ == "__main__":
     jobs_list = fetch_jobs_fi()
-    logging.info(f"Fetched {len(jobs_list)} jobs before filtering.")
+    logging.info(f"(FI) Fetched {len(jobs_list)} jobs.")
 
-    filtered_jobs = filter_jobs(jobs_list)
-    logging.info(f"{len(filtered_jobs)} jobs remained after filtering.")
+    filtered = filter_jobs(jobs_list)
+    logging.info(f"(FI) {len(filtered)} left after filtering.")
 
-    # Dump unfiltered jobs in debug mode
+    # Optional debugging: write raw API response
     if logging.getLogger().level == logging.DEBUG:
-        debug_file = "debug_fi_jobs.json"
-        with open(debug_file, "w") as f:
+        with open("debug_fi_jobs.json", "w") as f:
             json.dump(jobs_list, f, indent=2)
-        logging.debug(f"Dumped unfiltered job data to {debug_file}")
+        logging.debug("Wrote debug_fi_jobs.json")
 
-    output = {
-        "fetched_at": datetime.now().astimezone().isoformat(timespec="seconds"),
-        "data": filtered_jobs,
-    }
-    print(json.dumps(output, indent=2))
+    save_jobs_to_db_fi(filtered)
+
+    logging.info("(FI) Job sync completed.")

@@ -1,6 +1,14 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
+from uuid import uuid4, UUID
 from datetime import datetime
+from enum import Enum
+
+
+class JobRegion(str, Enum):
+    FI = "fi"
+    EMEA = "emea"
+    UNSPECIFIED = "unspecified"
 
 
 class User(SQLModel, table=True):
@@ -19,7 +27,7 @@ class JobSource(SQLModel, table=True):
 
 
 class Job(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     external_id: Optional[str]
     title: str
     company: str
@@ -31,27 +39,29 @@ class Job(SQLModel, table=True):
     remote: Optional[bool] = False
     hybrid: Optional[bool] = False
 
+    region: JobRegion = Field(default=JobRegion.UNSPECIFIED, index=True)
+
     source_id: Optional[int] = Field(default=None, foreign_key="jobsource.id")
     source: Optional[JobSource] = Relationship()
 
     history: List["JobStateHistory"] = Relationship(back_populates="job")
 
 
-class CVVersion(SQLModel, table=True):
-    __tablename__ = "cvversion"
+class CVVer(SQLModel, table=True):
+    __tablename__ = "cvver"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     version_label: str
     file_path: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    history: List["JobStateHistory"] = Relationship(back_populates="cv_version")
+    history: List["JobStateHistory"] = Relationship(back_populates="cv_ver")
 
 
 class JobStateHistory(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    job_id: int = Field(foreign_key="job.id")
+    job_id: UUID = Field(foreign_key="job.id")  # <-- changed
     user_id: int = Field(foreign_key="user.id")
     cv_version_id: Optional[int] = Field(default=None, foreign_key="cvversion.id")
 

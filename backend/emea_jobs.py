@@ -179,25 +179,31 @@ def save_jobs_to_db(jobs: List[JobRecord]):
     with Session(engine) as session:
         for raw in jobs:
 
+            external_id = str(raw["id"])
+
             existing = session.exec(
-                select(Job).where(Job.external_id == str(raw["id"]))
+                select(Job).where(Job.external_id == external_id)
             ).first()
 
             if existing:
-                # Update relevant fields if changed
                 changed = False
+-
+                updates = {
+                    "title": raw["job_title"],
+                    "company": raw["company"],
+                    "url": raw["url"],
+                    "description": raw.get("description", ""),
+                    "country": raw.get("country", None),
+                }
 
-                if existing.title != raw["job_title"]:
-                    existing.title = raw["job_title"]; changed = True
+                for field, value in updates.items():
+                    if getattr(existing, field) != value:
+                        setattr(existing, field, value)
+                        changed = True
 
-                if existing.company != raw["company"]:
-                    existing.company = raw["company"]; changed = True
-
-                if existing.url != raw["url"]:
-                    existing.url = raw["url"]; changed = True
-
-                if existing.description != raw.get("description", ""):
-                    existing.description = raw.get("description", ""); changed = True
+                if existing.region is None:
+                    existing.region = JobRegion.EMEA
+                    changed = True
 
                 if changed:
                     session.add(existing)
@@ -205,12 +211,13 @@ def save_jobs_to_db(jobs: List[JobRecord]):
 
             else:
                 job = Job(
-                    external_id=str(raw["id"]),
+                    external_id=external_id,
                     title=raw["job_title"],
                     company=raw["company"],
                     url=raw["url"],
                     description=raw.get("description", ""),
-                    country=raw.get("country", None)
+                    country=raw.get("country", None),
+                    region=JobRegion.EMEA,  # <-- NEW
                 )
                 session.add(job)
                 inserted += 1
