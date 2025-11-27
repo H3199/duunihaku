@@ -61,9 +61,9 @@ class CVVer(SQLModel, table=True):
 class JobStateHistory(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    job_id: UUID = Field(foreign_key="job.id")  # <-- changed
+    job_id: UUID = Field(foreign_key="job.id")
     user_id: int = Field(foreign_key="user.id")
-    cv_version_id: Optional[int] = Field(default=None, foreign_key="cvversion.id")
+    cv_version_id: Optional[int] = Field(default=None, foreign_key="cvver.id")
 
     state: str
     notes: Optional[str]
@@ -71,4 +71,4 @@ class JobStateHistory(SQLModel, table=True):
 
     job: Job = Relationship(back_populates="history")
     user: User = Relationship(back_populates="job_states")
-    cv_version: Optional[CVVersion] = Relationship(back_populates="history")
+    cv_version: Optional[CVVer] = Relationship(back_populates="history")
