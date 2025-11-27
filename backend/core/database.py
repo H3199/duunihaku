@@ -7,7 +7,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./duunikanban.db")
 engine = create_engine(DATABASE_URL, echo=True)
 
 def init_db():
-    from backend.models.schema import SQLModel  # ensures models are imported
+    from models.schema import SQLModel  # ensures models are imported
     SQLModel.metadata.create_all(engine)
 
 def get_session():

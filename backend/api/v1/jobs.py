@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, Body
 from uuid import UUID
 from sqlmodel import Session, select
-from backend.core.database import engine
-from backend.models import Job, JobStateHistory, JobState
+from core.database import engine
+from models.schema import Job, JobStateHistory, JobState
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
