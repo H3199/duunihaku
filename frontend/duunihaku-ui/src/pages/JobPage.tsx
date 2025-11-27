@@ -8,7 +8,7 @@ export default function JobPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["job", id],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:8000/jobs/${id}`);
+      const res = await fetch(`http://localhost:8000/api/v1/jobs/${id}`);
       return res.json();
     },
   });

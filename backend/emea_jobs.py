@@ -8,7 +8,7 @@ from langdetect import detect, DetectorFactory
 from datetime import datetime
 from mytypes import JobRecord # Basically ORMish stuff, some technical debt here, because I never planned this project to grow this complex.
 from core.database import engine # DB stuff, obviously.
-from models.schema import Job
+from models.schema import Job, JobRegion
 from typing import List
 from sqlmodel import Session, select
 from api.status import get_credits
@@ -187,7 +187,7 @@ def save_jobs_to_db(jobs: List[JobRecord]):
 
             if existing:
                 changed = False
--
+
                 updates = {
                     "title": raw["job_title"],
                     "company": raw["company"],
