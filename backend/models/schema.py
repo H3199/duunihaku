@@ -5,16 +5,26 @@ from datetime import datetime
 from enum import Enum
 
 
+
 class JobRegion(str, Enum):
     FI = "fi"
     EMEA = "emea"
     UNSPECIFIED = "unspecified"
 
 
+class JobState(str, Enum):
+    NEW = "new"
+    SAVED = "saved"
+    APPLIED = "applied"
+    INTERVIEW = "interview"
+    OFFER = "offer"
+    REJECTED = "rejected"
+
+
 class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     email: str
-    password_hash: Optional[str]
+    password_hash: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     job_states: List["JobStateHistory"] = Relationship(back_populates="user")
@@ -23,19 +33,19 @@ class User(SQLModel, table=True):
 class JobSource(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
-    url: Optional[str]
+    url: Optional[str] = None
 
 
 class Job(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    external_id: Optional[str]
+    external_id: Optional[str] = Field(default=None, index=True)
     title: str
     company: str
     url: str
-    description: Optional[str]
-    country: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
+    description: Optional[str] = None
+    country: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     remote: Optional[bool] = False
     hybrid: Optional[bool] = False
 
@@ -47,28 +57,26 @@ class Job(SQLModel, table=True):
     history: List["JobStateHistory"] = Relationship(back_populates="job")
 
 
-class CVVer(SQLModel, table=True):
-    __tablename__ = "cvver"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
+class CVVersion(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     version_label: str
     file_path: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    history: List["JobStateHistory"] = Relationship(back_populates="cv_ver")
+    history: List["JobStateHistory"] = Relationship(back_populates="cv_version")
 
 
 class JobStateHistory(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
 
     job_id: UUID = Field(foreign_key="job.id")
-    user_id: int = Field(foreign_key="user.id")
-    cv_version_id: Optional[int] = Field(default=None, foreign_key="cvver.id")
+    user_id: UUID = Field(foreign_key="user.id")
+    cv_version_id: Optional[UUID] = Field(default=None, foreign_key="cvversion.id")
 
-    state: str
-    notes: Optional[str]
+    state: JobState = Field(sa_column=Column(String, nullable=False))  # stored as text
+    notes: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     job: Job = Relationship(back_populates="history")
     user: User = Relationship(back_populates="job_states")
-    cv_version: Optional[CVVer] = Relationship(back_populates="history")
+    cv_version: Optional[CVVersion] = Relationship(back_populates="history")

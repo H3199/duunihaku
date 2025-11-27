@@ -9,6 +9,7 @@ import requests
 from dotenv import load_dotenv
 from mytypes import JobRecord
 from sqlmodel import Session, select
+from core.database import engine
 from models.schema import Job, JobRegion, JobSource
 from typing import List
 
