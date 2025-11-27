@@ -53,10 +53,10 @@ export function KanbanBoard() {
   function onDragEnd(result: any) {
     if (!result.destination) return;
 
-    const jobId = Number(result.draggableId.replace("job-", ""));
+    const jobId = result.draggableId.replace("job-", "");
     const newState = result.destination.droppableId;
 
-    setStateMutation.mutate({ id: jobId, state: newState });
+    setStateMutation.mutate({ id: String(jobId), state: newState });
   }
 
   const COLUMN_LABELS: Record<string, string> = {
