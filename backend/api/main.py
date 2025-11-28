@@ -11,7 +11,7 @@ app = FastAPI(title="Duunikanban API")
 def on_startup():
     init_db()
 
-
+# TODO: fix this and remove the wildcard from allowed origins
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -30,3 +30,4 @@ app.add_middleware(
 
 
 app.include_router(jobs_router, prefix="/api/v1")
+app.include_router(status_router, prefix="/api/v1")
