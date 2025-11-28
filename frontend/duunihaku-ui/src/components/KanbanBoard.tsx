@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import type { Job } from "../api/jobs";
 import { useJobs } from "../hooks/useJobs";
+import { flagFromCountry } from "../utils/flagFromCountry";
 
 const COLUMN_ORDER = [
   "new",
@@ -48,9 +49,8 @@ export function KanbanBoard() {
   const grouped = Object.fromEntries(COLUMN_ORDER.map((c) => [c, [] as Job[]]));
 
   jobs.data.forEach((job: Job) => {
-    const state = job.state && COLUMN_ORDER.includes(job.state)
-      ? job.state
-      : "new";  // fallback
+    const state =
+      job.state && COLUMN_ORDER.includes(job.state) ? job.state : "new"; // fallback
 
     grouped[state].push(job);
   });
@@ -190,16 +190,31 @@ export function KanbanBoard() {
                                   }
                                 }}
                               >
-                                <Text fw={600} size="sm" style={{ color: theme.white }}>
-                                  {job.title}
-                                </Text>
-
-                                <Text size="xs" style={{ color: theme.colors.gray[4] }}>
+                                <Group gap="xs">
+                                  <Text size="lg">
+                                    {flagFromCountry(job.country)}
+                                  </Text>
+                                  <Text
+                                    fw={600}
+                                    size="sm"
+                                    style={{ color: theme.white }}
+                                  >
+                                    {job.title}
+                                  </Text>
+                                </Group>
+                                <Text
+                                  size="xs"
+                                  style={{ color: theme.colors.gray[4] }}
+                                >
                                   {job.company}
                                 </Text>
 
                                 {job.notes && (
-                                  <Text size="xs" mt={6} style={{ color: theme.colors.gray[5] }}>
+                                  <Text
+                                    size="xs"
+                                    mt={6}
+                                    style={{ color: theme.colors.gray[5] }}
+                                  >
                                     📝 {job.notes}
                                   </Text>
                                 )}
