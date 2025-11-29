@@ -77,6 +77,12 @@ export function KanbanBoard() {
 
   return (
     <ScrollArea h="85vh">
+
+    {/* ---- Credits at the top ---- */}
+    <div style={{ textAlign: "right", padding: "0.5rem 1rem", opacity: 0.8 }}>
+      <CreditsFooter />
+    </div>
+
       <DragDropContext onDragEnd={onDragEnd}>
         <div
           style={{
