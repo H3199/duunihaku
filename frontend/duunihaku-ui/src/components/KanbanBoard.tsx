@@ -50,11 +50,20 @@ export function KanbanBoard() {
   // ---- FIX: ensure grouping does not break ----
   const grouped = Object.fromEntries(COLUMN_ORDER.map((c) => [c, [] as Job[]]));
 
+  // ---- Group jobs by state ----
   jobs.data.forEach((job: Job) => {
     const state =
-      job.state && COLUMN_ORDER.includes(job.state) ? job.state : "new"; // fallback
-
+      job.state && COLUMN_ORDER.includes(job.state) ? job.state : "new";
     grouped[state].push(job);
+  });
+
+  // ---- Sort each column: newest first ----
+  Object.keys(grouped).forEach((state) => {
+    grouped[state].sort((a, b) => {
+      const dateA = new Date(a.updated_at ?? 0).getTime();
+      const dateB = new Date(b.updated_at ?? 0).getTime();
+      return dateB - dateA; // newest first
+    });
   });
 
   function onDragEnd(result: any) {
@@ -77,11 +86,10 @@ export function KanbanBoard() {
 
   return (
     <ScrollArea h="85vh">
-
-    {/* ---- Credits at the top ---- */}
-    <div style={{ textAlign: "right", padding: "0.5rem 1rem", opacity: 0.8 }}>
-      <CreditsFooter />
-    </div>
+      {/* ---- Credits at the top ---- */}
+      <div style={{ textAlign: "right", padding: "0.5rem 1rem", opacity: 0.8 }}>
+        <CreditsFooter />
+      </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div
