@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
 from uuid import UUID
-from sqlmodel import Session, select, desc
+from sqlmodel import Session, select, desc, asc
 from core.database import engine
 from models.schema import Job, JobStateHistory, JobState
 from pydantic import BaseModel
@@ -48,17 +48,28 @@ def get_job(job_id: UUID):
             raise HTTPException(status_code=404, detail="Job not found")
 
         # Fetch latest state entry
-        state_entry = session.exec(
+        latest_entry = session.exec(
             select(JobStateHistory)
             .where(JobStateHistory.job_id == job_id)
             .order_by(desc(JobStateHistory.timestamp))
         ).first()
 
-        job_dict = job.dict()
-        job_dict["state"] = state_entry.state if state_entry else "new"
-        job_dict["notes"] = state_entry.notes if state_entry else ""
+        # Fetch first time it was marked applied
+        applied_entry = session.exec(
+            select(JobStateHistory)
+            .where(JobStateHistory.job_id == job_id)
+            .where(JobStateHistory.state == "applied")
+            .order_by(asc(JobStateHistory.timestamp))
+        ).first()
 
-        return job_dict
+        response = job.dict()
+
+        response["state"] = latest_entry.state if latest_entry else "new"
+        response["notes"] = latest_entry.notes if latest_entry else ""
+        response["updated_at"] = latest_entry.timestamp if latest_entry else None
+        response["applied_at"] = applied_entry.timestamp if applied_entry else None
+
+        return response
 
 
 class JobUpdate(BaseModel):

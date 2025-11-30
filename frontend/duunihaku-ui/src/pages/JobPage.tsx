@@ -9,11 +9,26 @@ import {
   Group,
   Badge,
   Textarea,
+  Divider,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
 import { updateJobState, updateNotes } from "../api/jobsApi";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+function formatRelative(dateStr: string | null | undefined): string {
+  if (!dateStr) return "";
+
+  const date = new Date(dateStr);
+  const diff = Date.now() - date.getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (days === 0) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 7) return `${days} days ago`;
+
+  return date.toLocaleDateString();
+}
 
 export default function JobPage() {
   const { id } = useParams();
@@ -28,17 +43,14 @@ export default function JobPage() {
     },
   });
 
-  // ---- Notes state ----
+  // ---- Notes form state ----
   const [localNotes, setLocalNotes] = useState("");
 
-  // Sync once job data loads
   useEffect(() => {
-    if (data?.notes) {
-      setLocalNotes(data.notes);
-    }
+    if (data?.notes !== undefined) setLocalNotes(data.notes);
   }, [data]);
 
-  // ---- Mutation: update job state ----
+  // ---- Update state mutation ----
   const stateMutation = useMutation({
     mutationFn: ({ state }: { state: string }) => updateJobState(id!, state),
     onSuccess: () => {
@@ -47,7 +59,7 @@ export default function JobPage() {
     },
   });
 
-  // ---- Mutation: update notes ----
+  // ---- Update notes mutation ----
   const notesMutation = useMutation({
     mutationFn: ({ notes }: { notes: string }) => updateNotes(id!, notes),
     onSuccess: () => {
@@ -72,6 +84,17 @@ export default function JobPage() {
         </Badge>
       </Group>
 
+      {/* Info */}
+      <Text size="sm" mt="sm" style={{ opacity: 0.7 }}>
+        {data.applied_at
+          ? `Applied: ${formatRelative(data.applied_at)}`
+          : "Not applied yet"}
+      </Text>
+
+      <Text size="sm" style={{ opacity: 0.5 }}>
+        Last update: {data.updated_at ? formatRelative(data.updated_at) : "—"}
+      </Text>
+
       <Button
         component="a"
         href={data.url}
@@ -82,7 +105,7 @@ export default function JobPage() {
         Open Job Posting
       </Button>
 
-      {/* ---- ACTION BUTTON ROW ---- */}
+      {/* ---- ACTION BUTTONS ---- */}
       <Group mt="lg">
         <Button
           color="yellow"
@@ -110,10 +133,10 @@ export default function JobPage() {
         </Button>
       </Group>
 
+      <Divider my="lg" />
+
       {/* ---- NOTES ---- */}
-      <Title order={4} mt="xl">
-        Notes
-      </Title>
+      <Title order={4}>Notes</Title>
 
       <Textarea
         minRows={4}
@@ -148,6 +171,8 @@ export default function JobPage() {
           </Text>
         )}
       </Group>
+
+      <Divider my="lg" />
 
       <Text mt="xl" size="sm" style={{ whiteSpace: "pre-line" }}>
         {data.description || "No description available."}
