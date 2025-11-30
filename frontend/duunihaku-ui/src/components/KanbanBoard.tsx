@@ -20,8 +20,8 @@ const COLUMN_ORDER = [
   "saved",
   "applied",
   "interview",
-  "offer",
   "rejected",
+  "trash",
 ];
 
 function createClickGuard() {
@@ -89,8 +89,8 @@ export function KanbanBoard() {
     saved: "Saved",
     applied: "Applied",
     interview: "Interview",
-    offer: "Offer",
     rejected: "Rejected",
+    trash: "Trash",
   };
 
   return (

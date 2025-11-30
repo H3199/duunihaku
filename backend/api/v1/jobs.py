@@ -73,18 +73,25 @@ def update_job_state(job_id: UUID, payload: JobUpdate):
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")
 
-        # Create state history record
+        # Determine previous notes if none provided
+        last_notes = job.history[-1].notes if job.history else ""
+
         history = JobStateHistory(
             job_id=job_id,
-            user_id=None,  # until auth exists
+            user_id=None,
             state=payload.state or JobState.NEW,
-            notes=payload.notes or ""
+            notes=payload.notes if payload.notes is not None else last_notes
         )
+
         session.add(history)
         session.commit()
         session.refresh(history)
 
-        return {"job_id": job_id, "state": history.state, "notes": history.notes}
+        return {
+            "job_id": job_id,
+            "state": history.state,
+            "notes": history.notes
+        }
 
 
 @router.patch("/{job_id}/notes")
