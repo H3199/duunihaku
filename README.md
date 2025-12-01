@@ -1,4 +1,4 @@
-# Duunihaku — Daily Job Listings Dashboard
+# Duunikanban — Job Listings Kanban
 
 > Duunikanban is a job hunting tool that fetches listings from the [TheirStack](https://theirstack.com) API and stores them in a SQLite database. It provides a simple Kanban-style UI to organize your applications. Compared to e.g. LinkedIn's job search Duunikanban filters out non-english remote jobs, promoted jobs, fake remote jobs and you can set your coordinates and a distance in km to filter onsite jobs.
 
