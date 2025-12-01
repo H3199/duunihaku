@@ -87,6 +87,7 @@ dealbreakers = [
     "Location: Hybrid",
     "Polish",
     "Hybrid within",
+    "UK Citizenship",
     ]
 
 emea = [
