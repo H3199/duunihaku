@@ -63,15 +63,18 @@ THEIRSTACK_API_KEY=your-api-key
 VITE_API_URL=http://<your-docker-host>:8000
 ```
 
-5. Run `docker-compose up -d` to start the app
-6. Open http://localhost:3000 in your browser
-7. May the odds be ever in your favor.
+5. Currently settings are still hardcoded in fi_jobs.py and emea_jobs.py, like what jobs we actually search for, distance from home and dealbreaker phrases in job descriptions.
+TheirStack API docs are useful for customizing the search. Link [here](https://api.theirstack.com/#tag/jobs/POST/v1/jobs/search)
+6. Run `docker-compose up -d` to start the app
+7. Open http://localhost:3000 in your browser
+8. May the odds be ever in your favor.
 
 ---
 
 
 ## Roadmap
 - [x] Kanban UI: v0.1.0
+- [ ] Config file for settings v0.2.0
 - [ ] Timers for stale jobs: v0.2.0
 - [ ] Multiple users & SaaS: v0.2.0
 - [ ] Tool for manually filling kanban cards.: v0.2.0
