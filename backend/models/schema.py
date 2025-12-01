@@ -19,6 +19,7 @@ class JobState(str, Enum):
     INTERVIEW = "interview"
     OFFER = "offer"
     REJECTED = "rejected"
+    TRASH = "trash"
 
 
 class User(SQLModel, table=True):
