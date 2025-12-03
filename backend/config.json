@@ -128,5 +128,11 @@
       "HR",
       "SI"
     ]
+  },
+
+  "fi_filters": {
+    "distance_from_home_km": 60,
+    "home_lat": 62.2426,
+    "home_lon": 25.7473
   }
 }

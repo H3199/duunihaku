@@ -18,10 +18,11 @@ from config_loader import load_config
 load_dotenv()
 config = load_config()
 
-FI_QUERY = config["fi_query"]
 THEIRSTACK_KEY = os.getenv("THEIRSTACK_API_KEY")
-HOME_LAT = float(os.getenv("HOME_LAT"))
-HOME_LON = float(os.getenv("HOME_LON"))
+FI_QUERY = config["fi_query"]
+HOME_LAT = float(config["fi_filters"]["home_lat"])
+HOME_LON = float(config["fi_filters"]["home_lon"])
+DISTANCE_FROM_HOME_KM = float(config["fi_filters"]["distance_from_home_km"])
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
@@ -160,7 +161,7 @@ if __name__ == "__main__":
     jobs_list = fetch_jobs_fi()
     logging.info(f"(FI) Fetched {len(jobs_list)} jobs.")
 
-    filtered = filter_jobs(jobs_list)
+    filtered = filter_jobs(jobs_list, DISTANCE_FROM_HOME_KM)
     logging.info(f"(FI) {len(filtered)} left after filtering.")
 
     # Optional debugging: write raw API response
