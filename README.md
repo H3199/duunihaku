@@ -49,11 +49,9 @@
 
 1. Clone the repo
 2. Sign up for TheirStack [here](https://app.theirstack.com/signup) and get your API key.
-3. Set environment variables in .env file:
+3. Set API-key in .env file in project root:
 
 ```
-HOME_LAT=62.2426
-HOME_LON=25.7473
 THEIRSTACK_API_KEY=your-api-key
 ```
 
@@ -63,8 +61,8 @@ THEIRSTACK_API_KEY=your-api-key
 VITE_API_URL=http://<your-docker-host>:8000
 ```
 
-5. Currently settings are still hardcoded in fi_jobs.py and emea_jobs.py, like what jobs we actually search for, distance from home and dealbreaker phrases in job descriptions.
-TheirStack API docs are useful for customizing the search. Link [here](https://api.theirstack.com/#tag/jobs/POST/v1/jobs/search)
+5. Check the search and filter settings in backend/settings.json.
+TheirStack API docs are useful for customizing. Link [here](https://api.theirstack.com/#tag/jobs/POST/v1/jobs/search)
 
 6. Run `docker-compose up -d` to start the app
 7. Open http://localhost:3000 in your browser
