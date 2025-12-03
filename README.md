@@ -73,7 +73,7 @@ TheirStack API docs are useful for customizing. Link [here](https://api.theirsta
 
 ## Roadmap
 - [x] Kanban UI: v0.1.0
-- [ ] Config file for settings v0.2.0
+- [x] Config file for settings v0.1.0
 - [ ] Timers for stale jobs: v0.2.0
 - [ ] Multiple users & SaaS: v0.2.0
 - [ ] Tool for manually filling kanban cards: v0.2.0
